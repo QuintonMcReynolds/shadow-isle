@@ -8,9 +8,6 @@
 "use strict";
 
 const Telemetry = (() => {
-  // localStorage keys are prefixed per game; CONFIG.GAME tags rows when several games share a table
-  const P = CONFIG.STORAGE_PREFIX || "si_";
-  const GAME = CONFIG.GAME ? { game: CONFIG.GAME } : {};
   const LS = {
     get(k) { try { return localStorage.getItem(k); } catch { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode */ } },
@@ -59,9 +56,9 @@ const Telemetry = (() => {
       state.clock = bot.clock;
       state.optedOut = false;
     } else {
-      state.playerId = LS.get(P + "player") || uuid();
-      LS.set(P + "player", state.playerId);
-      state.optedOut = LS.get(P + "optout") === "1";
+      state.playerId = LS.get("si_player") || uuid();
+      LS.set("si_player", state.playerId);
+      state.optedOut = LS.get("si_optout") === "1";
     }
     state.variant = assign(state.playerId, CONFIG.EXPERIMENT_ID, CONFIG.VARIANTS);
 
@@ -84,10 +81,10 @@ const Telemetry = (() => {
     if (!state.isBot) {
       // events that didn't make it out last time
       try {
-        const saved = JSON.parse(LS.get(P + "unsent") || "[]");
+        const saved = JSON.parse(LS.get("si_unsent") || "[]");
         if (Array.isArray(saved)) state.queue.push(...saved.slice(-500));
       } catch { /* ignore */ }
-      LS.set(P + "unsent", "[]");
+      LS.set("si_unsent", "[]");
       state.timer = setInterval(() => flush(), 5000);
       const bye = () => { flush(true); };
       document.addEventListener("visibilitychange", () => {
@@ -111,7 +108,6 @@ const Telemetry = (() => {
       variant: state.variant,
       game_version: CONFIG.GAME_VERSION,
       is_bot: state.isBot,
-      ...GAME,
       props,
     });
     if (state.queue.length >= 25) flush();
@@ -121,8 +117,8 @@ const Telemetry = (() => {
     if (!state.queue.length) return;
     const batch = state.queue.splice(0, state.queue.length);
     if (!state.endpoint) {  // no backend configured: keep a local copy for debugging
-      const kept = JSON.parse(LS.get(P + "local_events") || "[]").concat(batch).slice(-300);
-      LS.set(P + "local_events", JSON.stringify(kept));
+      const kept = JSON.parse(LS.get("si_local_events") || "[]").concat(batch).slice(-300);
+      LS.set("si_local_events", JSON.stringify(kept));
       return;
     }
     try {
@@ -135,15 +131,15 @@ const Telemetry = (() => {
     } catch (e) {
       state.failed += batch.length;
       if (!state.isBot) {
-        const kept = JSON.parse(LS.get(P + "unsent") || "[]").concat(batch).slice(-500);
-        LS.set(P + "unsent", JSON.stringify(kept));
+        const kept = JSON.parse(LS.get("si_unsent") || "[]").concat(batch).slice(-500);
+        LS.set("si_unsent", JSON.stringify(kept));
       }
     }
   }
 
   function setOptOut(v) {
     state.optedOut = v;
-    LS.set(P + "optout", v ? "1" : "0");
+    LS.set("si_optout", v ? "1" : "0");
     if (v) state.queue.length = 0;
   }
 
