@@ -1,3 +1,5 @@
+<img src="art/cuetip_productions_logo.png" width="220" alt="CueTip Productions logo: white Cuetip bunny on black above the words CUETIP PRODUCTIONS">
+
 # Shadow Isle: Escape the Abyss
 
 **A browser game by CuetipLLC, instrumented end to end, with a pre-registered A/B test on
@@ -107,5 +109,14 @@ art/                  original Cuetip art and poster (© CuetipLLC)
 
 ## Credits
 
-Character, art and *Shadow Isle* concept: **CuetipLLC**. Code and analytics: Quinton
-McReynolds. Cuetip and the Shadow Isle artwork are not covered by any open-source license.
+<img src="docs/img/quinton.png" width="120" align="left" alt="Illustrated portrait of Quinton McReynolds in an orange hoodie and glasses">
+
+**Quinton McReynolds**, founder of CuetipLLC / CueTip Productions. Creator of Cuetip,
+designer of *Shadow Isle*, and builder of its data pipeline. B.S. Computer Game Design,
+George Mason University.
+
+<br clear="left">
+
+Cuetip, the CueTip Productions logo, and all *Shadow Isle* artwork © CuetipLLC. All rights
+reserved. They are not covered by any open-source license and may not be reused without
+permission.
