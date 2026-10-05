@@ -1,2 +1,3 @@
 # One player_id per line: your own playtest browsers, so they never count in results.
 # Find yours by opening the game and running  localStorage.si_player  in the browser console.
+fbe33fd8-6bf9-4a4d-a8a9-faf24f4e13e2  # setup test event
