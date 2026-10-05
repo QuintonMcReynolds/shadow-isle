@@ -5,8 +5,8 @@
 
 const CONFIG = {
   GAME_VERSION: "1.0.0",
-  SUPABASE_URL: "",       // e.g. "https://abcdefgh.supabase.co"
-  SUPABASE_ANON_KEY: "",  // Project Settings -> API -> anon public key
+  SUPABASE_URL: "https://fyrqmnfqpkeryzhquuef.supabase.co",
+  SUPABASE_ANON_KEY: "",  // Project Settings -> API Keys -> publishable key (sb_publishable_...)
 
   // The experiment. Assignment is a hash of the anonymous player id, so a player always
   // gets the same arm. Change EXPERIMENT_ID to start a new experiment with fresh assignment.

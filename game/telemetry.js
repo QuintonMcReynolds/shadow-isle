@@ -70,9 +70,13 @@ const Telemetry = (() => {
       state.headers = {
         "Content-Type": "application/json",
         apikey: CONFIG.SUPABASE_ANON_KEY,
-        Authorization: "Bearer " + CONFIG.SUPABASE_ANON_KEY,
         Prefer: "return=minimal",
       };
+      // legacy anon keys are JWTs and also go in Authorization; new "sb_publishable_" keys
+      // must only be sent as apikey
+      if (!CONFIG.SUPABASE_ANON_KEY.startsWith("sb_")) {
+        state.headers.Authorization = "Bearer " + CONFIG.SUPABASE_ANON_KEY;
+      }
     }
     if (!state.isBot) {
       // events that didn't make it out last time

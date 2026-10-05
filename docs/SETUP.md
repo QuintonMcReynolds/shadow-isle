@@ -8,9 +8,10 @@ About 30 minutes, once. You'll need a free Supabase account and a free itch.io a
    the region closest to you. Save the database password somewhere safe; you won't need it here.
 2. When the project is ready, open **SQL Editor → New query**, paste all of
    [`supabase/schema.sql`](../supabase/schema.sql), and click **Run**. You should see "Success".
-3. Open **Project Settings → API** and copy two values:
+3. Open **Project Settings → API Keys** and copy two values:
    - **Project URL** (looks like `https://abcdefgh.supabase.co`)
-   - **anon public** key
+   - the **publishable** key (`sb_publishable_...`), or on older projects the legacy
+     **anon public** key. Either works.
 4. Put them in [`game/config.js`](../game/config.js):
    ```js
    SUPABASE_URL: "https://abcdefgh.supabase.co",
@@ -18,8 +19,8 @@ About 30 minutes, once. You'll need a free Supabase account and a free itch.io a
    ```
    The anon key is designed to be public. The schema only lets it *insert* events, so nobody
    can read or delete your data with it.
-5. From the same API page, copy the **service_role** key, but **never put it in the game or
-   in git**. Keep it in a file named `.env` in the repo root (already git-ignored):
+5. From the same page, copy the **secret** key (`sb_secret_...`, or the legacy
+   **service_role** key), but **never put it in the game or in git**. Keep it in a file named `.env` in the repo root (already git-ignored):
    ```
    SUPABASE_URL=https://abcdefgh.supabase.co
    SUPABASE_SERVICE_KEY=eyJhbGciOi...

@@ -29,7 +29,9 @@ def pull_supabase(page: int = 1000) -> list[dict]:
 
     url = os.environ["SUPABASE_URL"].rstrip("/") + "/rest/v1/events"
     key = os.environ["SUPABASE_SERVICE_KEY"]
-    headers = {"apikey": key, "Authorization": f"Bearer {key}"}
+    headers = {"apikey": key}
+    if not key.startswith("sb_"):  # legacy service_role JWT; new sb_secret_ keys go in apikey only
+        headers["Authorization"] = f"Bearer {key}"
     rows, start = [], 0
     while True:
         r = requests.get(url, headers={**headers, "Range": f"{start}-{start + page - 1}"},
