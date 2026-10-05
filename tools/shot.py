@@ -1,7 +1,4 @@
-"""Screenshot a game in headless Chrome (dev helper).
-
-    python tools/shot.py out.png '?demo=1' 9000 [web dir, default game]
-"""
+"""Screenshot the game in headless Chrome (dev helper): python tools/shot.py out.png '?demo=1' 9000"""
 import subprocess
 import sys
 import tempfile
@@ -13,9 +10,8 @@ from collector import serve
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 
-def shot(out: str, query: str = "", budget_ms: int = 2000, size: str = "960,540", port: int = 8791,
-         web: str = "game"):
-    httpd = serve(port, web=web)
+def shot(out: str, query: str = "", budget_ms: int = 2000, size: str = "960,540", port: int = 8791):
+    httpd = serve(port)
     out_p = Path(out)
     out_p.unlink(missing_ok=True)
     with tempfile.TemporaryDirectory() as prof:
@@ -36,5 +32,4 @@ def shot(out: str, query: str = "", budget_ms: int = 2000, size: str = "960,540"
 
 if __name__ == "__main__":
     print(shot(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else "",
-               int(sys.argv[3]) if len(sys.argv) > 3 else 2000,
-               web=sys.argv[4] if len(sys.argv) > 4 else "game"))
+               int(sys.argv[3]) if len(sys.argv) > 3 else 2000))

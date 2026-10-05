@@ -1,4 +1,5 @@
--- Second game in the same table: Cuetip and the Last Lighthouse.
+-- Second game in the same table: Cuetip and the Last Lighthouse
+-- (github.com/QuintonMcReynolds/last-lighthouse, which keeps its own copy as supabase/setup.sql).
 -- Run once after schema.sql: SQL Editor -> New query -> paste -> Run. Safe to run again.
 --
 -- * a game column; existing rows (and Shadow Isle builds, which don't send it) are 'shadow_isle'
