@@ -53,7 +53,8 @@ def main(supabase: bool = False) -> None:
     if supabase:
         live = pull_supabase()
         (RAW / "supabase_snapshot.json").write_text(json.dumps(live))
-        rows += [{**r, "source": "supabase"} for r in live]
+        # the table also holds other games (supabase/002_last_lighthouse.sql); keep Shadow Isle only
+        rows += [{**r, "source": "supabase"} for r in live if r.get("game", "shadow_isle") == "shadow_isle"]
     df = pd.DataFrame(rows).reindex(columns=COLS)
     df["props"] = df["props"].map(lambda p: json.dumps(p if isinstance(p, dict) else {}))
     DB.parent.mkdir(parents=True, exist_ok=True)

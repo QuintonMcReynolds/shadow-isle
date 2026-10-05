@@ -1,4 +1,4 @@
-"""Run game/test.html in headless Chrome and report (exit 1 on failure)."""
+"""Run <game>/test.html in headless Chrome and report (exit 1 on failure): run_js_tests.py [web dir]"""
 import json
 import subprocess
 import sys
@@ -8,7 +8,8 @@ from collector import DONE, DONE_MSG, serve
 
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-httpd = serve(8792)
+web = sys.argv[1] if len(sys.argv) > 1 else "game"
+httpd = serve(8792, web=web)
 with tempfile.TemporaryDirectory() as prof:
     p = subprocess.Popen([CHROME, "--headless=new", "--disable-gpu", f"--user-data-dir={prof}",
                           "http://127.0.0.1:8792/test.html?collector=http://127.0.0.1:8792"],

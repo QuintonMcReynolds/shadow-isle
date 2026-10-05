@@ -23,8 +23,8 @@ def main(bots: bool) -> dict:
             SELECT * FROM main.exp_player_metrics WHERE is_bot = {str(bots).lower()}
         """).df()
         data_end = con.execute("SELECT max(client_ts) FROM main.stg_events").fetchone()[0]
-    excl = {line.strip() for line in (ROOT / "analytics" / "exclude_players.txt").open()
-            if line.strip() and not line.startswith("#")}
+    excl = {line.split("#")[0].strip() for line in (ROOT / "analytics" / "exclude_players.txt").open()}
+    excl.discard("")
     df = df[~df.player_id.isin(excl)]
     out_dir = ROOT / "reports" / ("dry_run_bots" if bots else "live")
     out_dir.mkdir(parents=True, exist_ok=True)

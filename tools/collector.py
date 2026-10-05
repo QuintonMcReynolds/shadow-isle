@@ -1,10 +1,11 @@
 """Local development server: serves the game and collects telemetry into data/raw/*.jsonl.
 
-    python tools/collector.py            # http://localhost:8787/index.html?collector=http://localhost:8787
+    python tools/collector.py                    # Shadow Isle: http://localhost:8787/index.html?collector=...
+    python tools/collector.py 8788 lighthouse    # Last Lighthouse -> data/raw/lighthouse/events.jsonl
 
 POST /events  -> appends rows (same JSON as the Supabase insert) to data/raw/events.jsonl
 POST /done    -> bot runs report completion here
-Everything else is served from game/.
+Everything else is served from game/ (or the folder named on the command line).
 """
 
 import json
@@ -22,9 +23,10 @@ LOCK = threading.Lock()
 
 class Handler(SimpleHTTPRequestHandler):
     out_file = RAW / "events.jsonl"
+    web_dir = ROOT / "game"
 
     def __init__(self, *a, **kw):
-        super().__init__(*a, directory=str(ROOT / "game"), **kw)
+        super().__init__(*a, directory=str(self.web_dir), **kw)
 
     def log_message(self, *args):  # quiet
         pass
@@ -55,10 +57,13 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
 
 
-def serve(port: int = 8787, out_file: Path | None = None) -> ThreadingHTTPServer:
-    RAW.mkdir(parents=True, exist_ok=True)
+def serve(port: int = 8787, out_file: Path | None = None, web: str = "game") -> ThreadingHTTPServer:
+    Handler.web_dir = ROOT / web
+    if web != "game":  # other games' events must never mix into Shadow Isle's raw files
+        Handler.out_file = RAW / web / "events.jsonl"
     if out_file:
         Handler.out_file = out_file
+    Handler.out_file.parent.mkdir(parents=True, exist_ok=True)
     httpd = ThreadingHTTPServer(("127.0.0.1", port), Handler)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     return httpd
@@ -66,6 +71,7 @@ def serve(port: int = 8787, out_file: Path | None = None) -> ThreadingHTTPServer
 
 if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8787
-    serve(port)
-    print(f"Shadow Isle dev server: http://localhost:{port}/index.html?collector=http://localhost:{port}")
+    web = sys.argv[2] if len(sys.argv) > 2 else "game"
+    serve(port, web=web)
+    print(f"{web} dev server: http://localhost:{port}/index.html?collector=http://localhost:{port}")
     threading.Event().wait()
