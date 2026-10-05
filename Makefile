@@ -1,7 +1,7 @@
 PY ?= .venv/bin/python
 DBT = cd analytics/dbt && ../../.venv/bin/dbt
 
-.PHONY: lh-dev lh-test lh-package lh-report dev bots load load-live models readout readout-live dashboard dashboard-live test lint package
+.PHONY: dev bots load load-live models readout readout-live dashboard dashboard-live test lint package
 
 dev:           ## play locally with telemetry going to data/raw/events.jsonl
 	$(PY) tools/collector.py
@@ -39,19 +39,6 @@ lint:
 
 package:       ## itch.io upload zip
 	$(PY) tools/package.py
-
-# ---- Cuetip and the Last Lighthouse (lighthouse/)
-lh-dev:        ## play locally: http://localhost:8788/index.html?collector=http://localhost:8788
-	$(PY) tools/collector.py 8788 lighthouse
-
-lh-test:       ## full walkthrough + random-play tests in headless Chrome
-	cd tools && ../$(PY) run_js_tests.py lighthouse
-
-lh-package:    ## itch.io upload zip
-	$(PY) tools/package.py lighthouse
-
-lh-report:     ## puzzle funnel + experiment readout from Supabase
-	$(PY) analytics/lighthouse_report.py
 
 dry-run: bots load models readout dashboard
 live: load-live models readout-live dashboard-live

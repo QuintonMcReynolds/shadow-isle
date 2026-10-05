@@ -1,1 +1,0 @@
-../game/sprites.js
