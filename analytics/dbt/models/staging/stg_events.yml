@@ -1,0 +1,18 @@
+version: 2
+models:
+  - name: stg_events
+    columns:
+      - name: event_id
+        tests: [unique, not_null]
+      - name: player_id
+        tests: [not_null]
+      - name: event
+        tests:
+          - accepted_values:
+              arguments:
+                values: [session_start, exposure, run_start, run_end, escape, session_end, client_error]
+      - name: variant
+        tests:
+          - accepted_values:
+              arguments:
+                values: [standard, gentle_start]

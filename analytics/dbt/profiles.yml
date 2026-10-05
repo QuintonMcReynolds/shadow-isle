@@ -1,0 +1,9 @@
+shadow_isle:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../../data/warehouse.duckdb
+      threads: 4
+      settings:
+        TimeZone: UTC   # day boundaries for retention are UTC days

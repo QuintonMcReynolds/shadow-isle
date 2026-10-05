@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Shadow Isle: Escape the Abyss</title>
+<link rel="icon" href="favicon.png">
+<style>
+  html, body { margin: 0; height: 100%; background: #05060f; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas {
+    image-rendering: pixelated; image-rendering: crisp-edges;
+    touch-action: none; -webkit-user-select: none; user-select: none;
+    -webkit-tap-highlight-color: transparent; outline: none;
+  }
+  #botlog { position: fixed; left: 8px; top: 8px; color: #8c96c8; font: 12px monospace; }
+</style>
+</head>
+<body>
+<canvas id="screen" width="320" height="180" tabindex="0"></canvas>
+<div id="botlog"></div>
+<!--
+  Shadow Isle collects anonymous gameplay statistics (run length, score, how a run ended) to
+  study game design. No names, emails or device identifiers are collected; a random id is kept
+  in this browser. Turn it off on the title screen (D, or tap "PLAY STATS").
+-->
+<script src="config.js"></script>
+<script src="sprites.js"></script>
+<script src="telemetry.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

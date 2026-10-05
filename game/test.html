@@ -1,0 +1,82 @@
+<!doctype html>
+<!-- Unit tests for the game code, run headless by tools/run_js_tests.py. Not shipped. -->
+<meta charset="utf-8"><title>tests</title>
+<script>window.__NO_BOOT = true;</script>
+<script src="config.js"></script>
+<script src="sprites.js"></script>
+<script src="telemetry.js"></script>
+<script src="game.js"></script>
+<script>
+const results = [];
+function test(name, fn) {
+  try { fn(); results.push({ name, ok: true }); }
+  catch (e) { results.push({ name, ok: false, err: String(e) }); }
+}
+function assert(c, msg) { if (!c) throw new Error(msg || "assertion failed"); }
+
+test("assignment is deterministic", () => {
+  const a = Telemetry.assign("abc", "exp1_gentle_start", CONFIG.VARIANTS);
+  for (let i = 0; i < 5; i++) assert(Telemetry.assign("abc", "exp1_gentle_start", CONFIG.VARIANTS) === a);
+});
+test("assignment splits ~50/50 over 20k ids", () => {
+  let n = 0;
+  for (let i = 0; i < 20000; i++) if (Telemetry.assign("id-" + i + "-" + (i * 7919), "exp1_gentle_start", CONFIG.VARIANTS) === "gentle_start") n++;
+  assert(Math.abs(n / 20000 - 0.5) < 0.015, "share " + n / 20000);
+});
+test("a new experiment id reshuffles assignment", () => {
+  let same = 0;
+  for (let i = 0; i < 4000; i++) {
+    const id = "p" + i;
+    if (Telemetry.assign(id, "exp1", CONFIG.VARIANTS) === Telemetry.assign(id, "exp2", CONFIG.VARIANTS)) same++;
+  }
+  assert(Math.abs(same / 4000 - 0.5) < 0.04, "overlap " + same / 4000);
+});
+test("gentle start only differs early in the run", () => {
+  assert(gentle("gentle_start", 5) === 0.55 && gentle("standard", 5) === 1);
+  assert(gentle("gentle_start", 40) === 1);
+  assert(Difficulty.firstSpawn("gentle_start") > Difficulty.firstSpawn("standard"));
+});
+test("simulation is deterministic for a seed and inputs", () => {
+  const play = () => {
+    const r = new Run("standard", 42), bot = new BotBrain(0.6, mulberry32(9));
+    while (!r.over && r.t < 120) r.step(bot.think(r));
+    return JSON.stringify(r.summary());
+  };
+  assert(play() === play());
+});
+test("standing still on the island eventually ends the run", () => {
+  const r = new Run("standard", 7);
+  while (!r.over && r.t < 300) r.step({ mx: 0, my: 0, dash: false });
+  assert(r.over === "caught" || r.over === "fell", "over=" + r.over);
+});
+test("walking off the island is a fall", () => {
+  const r = new Run("standard", 3);
+  while (!r.over && r.t < 30) r.step({ mx: 1, my: 0, dash: false });
+  assert(r.over === "fell" || r.over === "caught");
+});
+test("dash makes Cuetip briefly untouchable", () => {
+  const r = new Run("standard", 5);
+  r.shadows.push({ x: r.player.x + 3, y: r.player.y, rise: 0, wob: 0 });
+  r.step({ mx: 0, my: 0, dash: true });
+  assert(!r.over, "caught during dash");
+});
+test("run summary has every field the warehouse expects", () => {
+  const s = new Run("standard", 1).summary("quit");
+  for (const k of ["duration_s", "score", "shards", "escapes", "island", "cause", "dashes",
+                   "max_shadows", "tiles_lost", "first_shadow_s", "death_x", "death_y", "input"])
+    assert(k in s, "missing " + k);
+});
+test("font covers every character the game prints", () => {
+  const texts = ["SHADOW ISLE", "ESCAPE THE ABYSS", "SHARDS 3/6", "BEACON LIT! RUN!",
+                 "CAUGHT BY THE SHADOWS", "LOST TO THE ABYSS", "PLAY STATS: ON (D)", "0123456789",
+                 "MOVE: WASD/ARROWS OR DRAG", "NEW BEST!", "ESCAPED!"];
+  for (const t of texts) for (const ch of t) assert(FONT[ch], "no glyph for " + ch);
+});
+test("sprites are rectangular", () => {
+  for (const g of [CUETIP, SHARD, ...SHADOW]) assert(g.every((r) => r.length === g[0].length));
+});
+
+const q = new URLSearchParams(location.search);
+fetch(q.get("collector") + "/done", { method: "POST", body: JSON.stringify(results) });
+document.body.textContent = JSON.stringify(results, null, 1);
+</script>

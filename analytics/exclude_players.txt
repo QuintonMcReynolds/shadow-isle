@@ -1,0 +1,2 @@
+# One player_id per line: your own playtest browsers, so they never count in results.
+# Find yours by opening the game and running  localStorage.si_player  in the browser console.

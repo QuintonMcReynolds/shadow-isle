@@ -1,0 +1,9 @@
+name: shadow_isle
+version: "1.0.0"
+profile: shadow_isle
+model-paths: ["models"]
+test-paths: ["tests"]
+models:
+  shadow_isle:
+    staging: {+materialized: view}
+    marts: {+materialized: table}
